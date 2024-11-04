@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braille Trainer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .score-box {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .braille-display {
+            font-size: 8em;
+            margin: 20px;
+            padding: 20px;
+            background: #fff;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .letter-display {
+            font-size: 2em;
+            margin-top: 10px;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="score-box">
+        <p>Score: <span id="score">0</span></p>
+        <p>Errors: <span id="errors">0</span></p>
+        <p>Error Rate: <span id="errorRate">0%</span></p>
+    </div>
+    <div class="braille-display" id="brailleLetter">⠃</div>
+    <div class="letter-display" id="letterDisplay">What letter is this?</div>
+    <div class="instructions">
+        <p>Press the key on your keyboard for the Braille letter above.</p>
+    </div>
+    <script>
+        const brailleLetters = [
+            { char: '⠁', letter: 'a' },
+            { char: '⠃', letter: 'b' },
+            { char: '⠉', letter: 'c' },
+            { char: '⠙', letter: 'd' },
+            { char: '⠑', letter: 'e' },
+            { char: '⠋', letter: 'f' },
+            { char: '⠛', letter: 'g' },
+            { char: '⠓', letter: 'h' },
+            { char: '⠊', letter: 'i' },
+            { char: '⠚', letter: 'j' },
+            { char: '⠅', letter: 'k' },
+            { char: '⠇', letter: 'l' },
+            { char: '⠍', letter: 'm' },
+            { char: '⠝', letter: 'n' },
+            { char: '⠕', letter: 'o' },
+            { char: '⠏', letter: 'p' },
+            { char: '⠟', letter: 'q' },
+            { char: '⠗', letter: 'r' },
+            { char: '⠎', letter: 's' },
+            { char: '⠞', letter: 't' },
+            { char: '⠥', letter: 'u' },
+            { char: '⠧', letter: 'v' },
+            { char: '⠭', letter: 'x' },
+            { char: '⠽', letter: 'y' },
+            { char: '⠵', letter: 'z' }
+        ];
+
+        let score = 0;
+        let errors = 0;
+
+        const scoreDisplay = document.getElementById('score');
+        const errorsDisplay = document.getElementById('errors');
+        const errorRateDisplay = document.getElementById('errorRate');
+        const brailleDisplay = document.getElementById('brailleLetter');
+        const letterDisplay = document.getElementById('letterDisplay');
+
+        function getRandomBraille() {
+            return brailleLetters[Math.floor(Math.random() * brailleLetters.length)];
+        }
+
+        let currentBraille = getRandomBraille();
+        brailleDisplay.textContent = currentBraille.char;
+        letterDisplay.textContent = 'Guess the letter';
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key.toLowerCase() === currentBraille.letter) {
+                score++;
+                currentBraille = getRandomBraille();
+                brailleDisplay.textContent = currentBraille.char;
+                letterDisplay.textContent = 'Guess the letter';
+            } else {
+                errors++;
+                letterDisplay.textContent = `Wrong! The letter was "${currentBraille.letter.toUpperCase()}"`;
+            }
+
+            const totalAttempts = score + errors;
+            const errorRate = totalAttempts ? ((errors / totalAttempts) * 100).toFixed(2) : 0;
+
+            scoreDisplay.textContent = score;
+            errorsDisplay.textContent = errors;
+            errorRateDisplay.textContent = `${errorRate}%`;
+        });
+    </script>
+</body>
+</html>
