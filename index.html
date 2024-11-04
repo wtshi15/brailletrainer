@@ -54,6 +54,9 @@
         <p>Score: <span id="score">0</span></p>
         <p>Errors: <span id="errors">0</span></p>
         <p>Error Rate: <span id="errorRate">0%</span></p>
+        <p>Time Elapsed: <span id="timer">0</span> s</p>
+        <p>Avg. Time per Letter: <span id="avgTime">0.00</span> s</p>
+        <button onclick="resetGame()">Reset</button>
     </div>
     <div class="braille-display" id="brailleLetter">⠃</div>
     <div class="letter-display" id="letterDisplay">What letter is this?</div>
@@ -91,10 +94,14 @@
 
         let score = 0;
         let errors = 0;
+        let startTime = Date.now();
+        let timerInterval;
 
         const scoreDisplay = document.getElementById('score');
         const errorsDisplay = document.getElementById('errors');
         const errorRateDisplay = document.getElementById('errorRate');
+        const timerDisplay = document.getElementById('timer');
+        const avgTimeDisplay = document.getElementById('avgTime');
         const brailleDisplay = document.getElementById('brailleLetter');
         const letterDisplay = document.getElementById('letterDisplay');
 
@@ -102,9 +109,32 @@
             return brailleLetters[Math.floor(Math.random() * brailleLetters.length)];
         }
 
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timerDisplay.textContent = elapsed;
+            const avgTime = (elapsed / (score + errors)).toFixed(2);
+            avgTimeDisplay.textContent = score + errors > 0 ? avgTime : '0.00';
+        }
+
+        function resetGame() {
+            score = 0;
+            errors = 0;
+            startTime = Date.now();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+            scoreDisplay.textContent = score;
+            errorsDisplay.textContent = errors;
+            errorRateDisplay.textContent = '0%';
+            timerDisplay.textContent = '0';
+            avgTimeDisplay.textContent = '0.00';
+            currentBraille = getRandomBraille();
+            brailleDisplay.textContent = currentBraille.char;
+            letterDisplay.textContent = 'Guess the letter';
+        }
+
         let currentBraille = getRandomBraille();
         brailleDisplay.textContent = currentBraille.char;
-        letterDisplay.textContent = 'Guess the letter';
+        timerInterval = setInterval(updateTimer, 1000);
 
         document.addEventListener('keydown', (event) => {
             if (event.key.toLowerCase() === currentBraille.letter) {
@@ -124,6 +154,9 @@
             errorsDisplay.textContent = errors;
             errorRateDisplay.textContent = `${errorRate}%`;
         });
+
+        // Initialize game
+        resetGame();
     </script>
 </body>
 </html>
